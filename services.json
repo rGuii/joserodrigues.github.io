@@ -6,9 +6,7 @@
   { "name": "Expansão de Sinal", "description": "Expansão do sinal para melhor cobertura." },
   { "name": "Configuração de Rede", "description": "Configuração e otimização de redes domésticas." },
   { "name": "Instalação de Câmeras de Segurança", "description": "Instalação e configuração de câmeras de segurança." },
-  { "name": "Manutenção Preventiva", "description": "Serviços de manutenção preventiva para evitar falhas futuras." }
+  { "name": "Manutenção Preventiva", "description": "Serviços de manutenção preventiva para evitar falhas futuras." },
   { "name": "Consultoria Técnica", "description": "Consultoria para soluções técnicas personalizadas." },
-  { "name": "Atualização de Software", "description": "Atualização de software para dispositivos eletrônicos." },
-  
+  { "name": "Atualização de Software", "description": "Atualização de software para dispositivos eletrônicos." }
 ]
-
