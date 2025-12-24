@@ -1,7 +1,7 @@
 [
-  { "name": "Assistencia Tecnica", "description": "Soluções personalizadas para sua empresa." },
-  { "name": "Desenvolvimento de sites", "description": "Sites modernos e responsivos." },
-  { "name": "Suporte e manutenção", "description": "Assistência rápida e eficiente." },
+  { "name": "Assistencia Tecnica", "description": "Se nao encontrar abaixo oque necessita contate-nos para uma avaliação presonalizada" },
+  { "name": "Avarias de Tv", "description": "Resolvemos todo o tipo de problemas com televisores." },
+  { "name": "Instalação de Antenas TDT", "description": "Instalação e configuração de antenas TDT." },
   { "name": "Treinamentos e workshops", "description": "Capacitação da sua equipe." }
 ]
 
