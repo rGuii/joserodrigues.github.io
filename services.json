@@ -1,12 +1,12 @@
 [
   { "name": "Assistencia Tecnica", "description": "Se nao encontrar abaixo oque necessita contate-nos para uma avaliação presonalizada" },
-  { "name": "Avarias de Tv", "description": "Resolvemos todo o tipo de problemas com televisores." },
+  { "name": "Manutenção e Reparação de Antenas TDT/SATELITE/GSM", "description": "" },
   { "name": "Instalação de Antenas TDT", "description": "Instalação e configuração de antenas TDT." },
   { "name": "Instalação de Antenas Satelite", "description": "Instalação e configuração de antenas de Satelite." },
   { "name": "Expansão de Sinal", "description": "Expansão do sinal para melhor cobertura." },
   { "name": "Configuração de Rede", "description": "Configuração e otimização de redes domésticas." },
   { "name": "Instalação de Câmeras de Segurança", "description": "Instalação e configuração de câmeras de segurança." },
   { "name": "Manutenção Preventiva", "description": "Serviços de manutenção preventiva para evitar falhas futuras." },
-  { "name": "Consultoria Técnica", "description": "Consultoria para soluções técnicas personalizadas." },
-  { "name": "Atualização de Software", "description": "Atualização de software para dispositivos eletrônicos." }
+  { "name": "Instalação", "description": "" },
+  { "name": "", "description": "" }
 ]
