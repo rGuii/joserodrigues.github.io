@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login · José Rodrigues Soluções</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #007bff;
+      --secondary: #00c6ff;
+      --dark: #1f2933;
+      --light: #f9fafb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      padding: 50px 35px;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-box h1 {
+      margin: 0 0 10px;
+      font-size: 1.9em;
+      color: var(--dark);
+      font-weight: 700;
+    }
+
+    .login-box p {
+      margin-bottom: 35px;
+      font-size: 0.95em;
+      color: #666;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 14px 15px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 0.95em;
+      font-family: inherit;
+    }
+
+    .login-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .login-box button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 25px;
+      font-size: 0.9em;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .error {
+      display: none;
+      margin-top: 15px;
+      color: #d32f2f;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h1>Área Privada</h1>
+    <p>Faça login para aceder ao painel</p>
+
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <div class="error" id="error-msg">
+      Email ou password inválidos
+    </div>
+
+    <a href="index.html" class="back-link">← Voltar ao site</a>
+  </div>
+
+  <!-- SCRIPT (placeholder) -->
+  <script>
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      // BACKEND ENTRA AQUI DEPOIS
+      errorMsg.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
