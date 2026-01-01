@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard · José Rodrigues Soluções</title>
+  <title>Dashboard Avançada · José Rodrigues Soluções</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -17,14 +17,29 @@
     button:hover { background:#0056b3; }
     table { width:100%; border-collapse: collapse; margin-top:20px; background:white; border-radius:10px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
     th, td { padding:10px; text-align:left; border-bottom:1px solid #ddd; }
+    .stats { display:flex; justify-content:space-around; margin-top:20px; }
+    .stat { background:white; padding:20px; border-radius:10px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:200px; }
     canvas { background:white; margin-top:30px; border-radius:10px; padding:20px; }
   </style>
 </head>
 <body>
 
-  <h1>Dashboard de Trabalhos</h1>
+  <h1>Dashboard Avançada</h1>
   <button id="logout">Sair</button>
 
+  <!-- Indicadores -->
+  <div class="stats">
+    <div class="stat">
+      <h2 id="total-trabalhos">0</h2>
+      <p>Trabalhos Concluídos</p>
+    </div>
+    <div class="stat">
+      <h2 id="total-faturado">€0.00</h2>
+      <p>Valor Total Faturado</p>
+    </div>
+  </div>
+
+  <!-- Formulário -->
   <form id="form-trabalho">
     <input type="text" id="nome" placeholder="Nome da instalação/avaria" required>
     <input type="number" id="valor" placeholder="Valor (€)" required step="0.01">
@@ -32,6 +47,7 @@
     <button type="submit">Adicionar Trabalho</button>
   </form>
 
+  <!-- Tabela -->
   <table id="tabela-trabalhos">
     <thead>
       <tr>
@@ -43,13 +59,23 @@
     <tbody></tbody>
   </table>
 
+  <!-- Gráficos -->
   <canvas id="grafico-valores"></canvas>
   <canvas id="grafico-mes"></canvas>
+  <canvas id="grafico-dia"></canvas>
 
   <script>
     const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
     const supabaseKey = 'sb_publishable_d8jQ2kcG2gSNPX9m3IFsGw_bkQbs7X3';
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const logoutBtn = document.getElementById('logout');
+    const form = document.getElementById('form-trabalho');
+    const tabela = document.querySelector('#tabela-trabalhos tbody');
+    const totalTrabalhosEl = document.getElementById('total-trabalhos');
+    const totalFaturadoEl = document.getElementById('total-faturado');
+
+    let chartValores, chartMes, chartDia;
 
     // Verifica sessão
     supabase.auth.getSession().then(({data}) => {
@@ -57,14 +83,12 @@
     });
 
     // Logout
-    document.getElementById('logout').addEventListener('click', async () => {
+    logoutBtn.addEventListener('click', async () => {
       await supabase.auth.signOut();
       window.location.href = 'login.html';
     });
 
-    const form = document.getElementById('form-trabalho');
-    const tabela = document.querySelector('#tabela-trabalhos tbody');
-
+    // Adicionar trabalho
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const nome = document.getElementById('nome').value;
@@ -83,37 +107,55 @@
       if(error) { console.log(error); return; }
 
       tabela.innerHTML = '';
-      const nomes = [];
-      const valores = [];
-      const datas = [];
+      let nomes = [], valores = [], datas = [];
+      let totalFaturado = 0;
 
-      trabalhos.forEach(trabalho => {
+      trabalhos.forEach(t => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${trabalho.nome}</td><td>${trabalho.valor.toFixed(2)}</td><td>${trabalho.data}</td>`;
+        tr.innerHTML = `<td>${t.nome}</td><td>${t.valor.toFixed(2)}</td><td>${t.data}</td>`;
         tabela.appendChild(tr);
 
-        nomes.push(trabalho.nome);
-        valores.push(trabalho.valor);
-        datas.push(trabalho.data);
+        nomes.push(t.nome);
+        valores.push(t.valor);
+        datas.push(t.data);
+        totalFaturado += t.valor;
       });
 
-      // Gráfico valores por trabalho
-      new Chart(document.getElementById('grafico-valores'), {
+      // Atualiza indicadores
+      totalTrabalhosEl.innerText = trabalhos.length;
+      totalFaturadoEl.innerText = `€${totalFaturado.toFixed(2)}`;
+
+      // Gráfico: valor por trabalho
+      if(chartValores) chartValores.destroy();
+      chartValores = new Chart(document.getElementById('grafico-valores'), {
         type: 'bar',
         data: { labels: nomes, datasets: [{ label: 'Valor (€)', data: valores, backgroundColor:'#007bff' }] },
         options: { responsive:true, plugins:{ legend:{ display:false } } }
       });
 
-      // Gráfico faturamento por mês
+      // Gráfico: faturamento por mês
       const faturamentoMes = {};
       datas.forEach((d,i) => {
         const mes = new Date(d).toLocaleString('default',{ month:'long', year:'numeric' });
         faturamentoMes[mes] = (faturamentoMes[mes] || 0) + valores[i];
       });
-
-      new Chart(document.getElementById('grafico-mes'), {
+      if(chartMes) chartMes.destroy();
+      chartMes = new Chart(document.getElementById('grafico-mes'), {
         type: 'line',
-        data: { labels: Object.keys(faturamentoMes), datasets:[{ label:'Faturamento (€)', data:Object.values(faturamentoMes), borderColor:'#00c6ff', fill:false, tension:0.3 }] },
+        data: { labels: Object.keys(faturamentoMes), datasets:[{ label:'Faturamento Mensal (€)', data:Object.values(faturamentoMes), borderColor:'#00c6ff', fill:false, tension:0.3 }] },
+        options:{ responsive:true }
+      });
+
+      // Gráfico: faturamento diário
+      const faturamentoDia = {};
+      datas.forEach((d,i) => {
+        const dia = new Date(d).toLocaleDateString();
+        faturamentoDia[dia] = (faturamentoDia[dia] || 0) + valores[i];
+      });
+      if(chartDia) chartDia.destroy();
+      chartDia = new Chart(document.getElementById('grafico-dia'), {
+        type: 'line',
+        data: { labels: Object.keys(faturamentoDia), datasets:[{ label:'Faturamento Diário (€)', data:Object.values(faturamentoDia), borderColor:'#ff5722', fill:false, tension:0.3 }] },
         options:{ responsive:true }
       });
     }
