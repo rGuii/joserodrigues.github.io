@@ -16,9 +16,7 @@
       --light: #f9fafb;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -46,18 +44,8 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .login-box h1 {
-      margin: 0 0 10px;
-      font-size: 1.9em;
-      color: var(--dark);
-      font-weight: 700;
-    }
-
-    .login-box p {
-      margin-bottom: 35px;
-      font-size: 0.95em;
-      color: #666;
-    }
+    .login-box h1 { margin: 0 0 10px; font-size: 1.9em; color: var(--dark); font-weight: 700; }
+    .login-box p { margin-bottom: 35px; font-size: 0.95em; color: #666; }
 
     .login-box input {
       width: 100%;
@@ -69,10 +57,7 @@
       font-family: inherit;
     }
 
-    .login-box input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
+    .login-box input:focus { outline: none; border-color: var(--primary); }
 
     .login-box button {
       width: 100%;
@@ -92,21 +77,9 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.25);
     }
 
-    .back-link {
-      display: inline-block;
-      margin-top: 25px;
-      font-size: 0.9em;
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-    }
+    .back-link { display: inline-block; margin-top: 25px; font-size: 0.9em; color: var(--primary); text-decoration: none; font-weight: 600; }
 
-    .error {
-      display: none;
-      margin-top: 15px;
-      color: #d32f2f;
-      font-size: 0.9em;
-    }
+    .error { display: none; margin-top: 15px; color: #d32f2f; font-size: 0.9em; }
   </style>
 </head>
 <body>
@@ -121,40 +94,38 @@
       <button type="submit">Entrar</button>
     </form>
 
-    <div class="error" id="error-msg">
-      Email ou password inválidos
-    </div>
-
+    <div class="error" id="error-msg">Email ou password inválidos</div>
     <a href="index.html" class="back-link">← Voltar ao site</a>
   </div>
 
-  <!-- SCRIPT (placeholder) -->
+  <!-- SUPABASE SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
   <script>
-  const form = document.getElementById('login-form');
-  const errorMsg = document.getElementById('error-msg');
+    // CONFIGURAÇÃO DA SUPABASE
+    const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co'; // substitui se mudar
+    const supabaseKey = 'SUA_ANON_KEY_AQUI'; // substitui pela tua anon key
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error || !data.user) {
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // login bem-sucedido → redireciona para dashboard
+      window.location.href = 'painel.html';
     });
-
-    if (error || !data.user) {
-      errorMsg.style.display = 'block';
-      errorMsg.textContent = 'Email ou password inválidos';
-      return;
-    }
-
-    // login bem-sucedido
-    window.location.href = 'painel.html'; // redireciona para a página privada
-  });
-</script>
-
+  </script>
 
 </body>
 </html>
