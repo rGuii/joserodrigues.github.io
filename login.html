@@ -98,12 +98,12 @@
     <a href="index.html" class="back-link">← Voltar ao site</a>
   </div>
 
-  <!-- SUPABASE SDK -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
   <script>
     // CONFIGURAÇÃO DA SUPABASE
-    const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co'; // substitui se mudar
-    const supabaseKey = 'sb_publishable_d8jQ2kcG2gSNPX9m3IFsGw_bkQbs7X3'; // substitui pela tua anon key
+    const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
+    const supabaseKey = 'sb_publishable_d8jQ2kcG2gSNPX9m3IFsGw_bkQbs7X3'; // publishable key
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     const form = document.getElementById('login-form');
@@ -119,6 +119,7 @@
 
       if (error || !data.user) {
         errorMsg.style.display = 'block';
+        console.log(error); // ver erro no console
         return;
       }
 
