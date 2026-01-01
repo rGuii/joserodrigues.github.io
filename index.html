@@ -28,8 +28,9 @@
       line-height: 1.6;
     }
 
-    /* HERO */
+    /* HEADER / HERO */
     header {
+      position: relative;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       padding: 90px 20px;
@@ -46,6 +47,26 @@
       margin-top: 15px;
       font-size: 1.3em;
       opacity: 0.95;
+    }
+
+    /* LOGIN BUTTON */
+    .login-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      padding: 10px 22px;
+      border-radius: 50px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      border: 2px solid rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .login-btn:hover {
+      background: white;
+      color: var(--primary);
     }
 
     /* SECTIONS */
@@ -106,10 +127,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
-    .contact h2 {
-      margin-bottom: 30px;
-    }
-
     .contact a {
       display: inline-block;
       margin: 10px;
@@ -142,7 +159,6 @@
       header h1 {
         font-size: 2.2em;
       }
-
       header p {
         font-size: 1.05em;
       }
@@ -153,6 +169,7 @@
 
   <!-- HERO -->
   <header>
+    <a href="login.html" class="login-btn">Login</a>
     <h1>José Rodrigues Soluções</h1>
     <p>Soluções inteligentes para a sua casa</p>
   </header>
