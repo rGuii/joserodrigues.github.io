@@ -99,12 +99,19 @@
   </div>
 
   <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+  <!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+
 <script>
-  // SUPABASE CONFIG
-  const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // CONFIGURAÇÃO
+  const SUPABASE_URL = 'https://enhhqjraoztkelmkddjr.supabase.co';
+  const SUPABASE_ANON_KEY = 'A_TUA_ANON_PUBLIC_KEY_AQUI';
+
+  // CRIAR CLIENTE (nome diferente!)
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
   const form = document.getElementById('login-form');
   const errorMsg = document.getElementById('error-msg');
@@ -117,24 +124,23 @@
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    console.log('A tentar login com:', email);
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
 
     if (error) {
-      console.error('Erro Supabase:', error);
       errorMsg.textContent = error.message;
       errorMsg.style.display = 'block';
+      console.error(error);
       return;
     }
 
-    console.log('LOGIN OK:', data);
+    // LOGIN OK
     window.location.href = 'painel.html';
   });
 </script>
+
 
 
 </body>
