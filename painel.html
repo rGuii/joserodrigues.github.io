@@ -1,174 +1,257 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Avançada · José Rodrigues Soluções</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: 'Poppins', sans-serif; margin:0; padding:20px; background:#f5f5f5; }
-    h1 { color:#007bff; display:inline-block; }
-    #logout { float:right; padding:10px 25px; border:none; border-radius:50px; background:#007bff; color:white; cursor:pointer; }
-    #logout:hover { background:#0056b3; }
-    form { margin-bottom:30px; background:white; padding:20px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
-    input { padding:10px; margin-right:10px; border-radius:5px; border:1px solid #ccc; }
-    button { padding:10px 20px; border:none; border-radius:50px; background:#007bff; color:white; cursor:pointer; }
-    button:hover { background:#0056b3; }
-    table { width:100%; border-collapse: collapse; margin-top:20px; background:white; border-radius:10px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
-    th, td { padding:10px; text-align:left; border-bottom:1px solid #ddd; }
-    .stats { display:flex; justify-content:space-around; margin-top:20px; }
-    .stat { background:white; padding:20px; border-radius:10px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:200px; }
-    canvas { background:white; margin-top:30px; border-radius:10px; padding:20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel · JR Solutions</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --primary:#007bff;
+  --bg:#f4f6f9;
+  --card:#ffffff;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+}
+
+/* HEADER */
+header {
+  background:linear-gradient(135deg,#007bff,#00c6ff);
+  color:white;
+  padding:20px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header h1 { margin:0; font-size:1.5em; }
+header button {
+  background:white;
+  color:#007bff;
+  border:none;
+  padding:10px 25px;
+  border-radius:30px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* LAYOUT */
+main {
+  max-width:1200px;
+  margin:40px auto;
+  padding:0 20px;
+}
+
+/* CARDS */
+.cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:25px;
+  margin-bottom:40px;
+}
+
+.card {
+  background:var(--card);
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  text-align:center;
+}
+
+.card h2 { margin:0; font-size:2em; color:var(--primary); }
+.card p { margin:5px 0 0; color:#666; }
+
+/* FORM */
+form {
+  background:white;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  margin-bottom:40px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+form input, form button {
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-family:inherit;
+}
+
+form input { flex:1; min-width:180px; }
+
+form button {
+  background:var(--primary);
+  color:white;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* TABLE */
+table {
+  width:100%;
+  background:white;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  border-collapse:collapse;
+}
+
+th,td {
+  padding:14px;
+  border-bottom:1px solid #eee;
+}
+
+th { background:#f0f4ff; }
+
+/* CHARTS */
+.charts {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:30px;
+  margin-top:40px;
+}
+
+canvas {
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+</style>
 </head>
+
 <body>
 
-  <h1>Dashboard Avançada</h1>
+<header>
+  <h1>Painel de Trabalhos</h1>
   <button id="logout">Sair</button>
+</header>
 
-  <!-- Indicadores -->
-  <div class="stats">
-    <div class="stat">
-      <h2 id="total-trabalhos">0</h2>
-      <p>Trabalhos Concluídos</p>
-    </div>
-    <div class="stat">
-      <h2 id="total-faturado">€0.00</h2>
-      <p>Valor Total Faturado</p>
-    </div>
+<main>
+
+<div class="cards">
+  <div class="card">
+    <h2 id="total-trabalhos">0</h2>
+    <p>Trabalhos</p>
   </div>
+  <div class="card">
+    <h2 id="total-faturado">€0.00</h2>
+    <p>Faturação</p>
+  </div>
+</div>
 
-  <!-- Formulário -->
-  <form id="form-trabalho">
-    <input type="text" id="nome" placeholder="Nome da instalação/avaria" required>
-    <input type="number" id="valor" placeholder="Valor (€)" required step="0.01">
-    <input type="date" id="data" required>
-    <button type="submit">Adicionar Trabalho</button>
-  </form>
+<form id="form-trabalho">
+  <input type="text" id="nome" placeholder="Descrição do trabalho" required>
+  <input type="number" id="valor" placeholder="Valor €" step="0.01" required>
+  <input type="date" id="data" required>
+  <button type="submit">Adicionar</button>
+</form>
 
-  <!-- Tabela -->
-  <table id="tabela-trabalhos">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Valor (€)</th>
-        <th>Data</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<table>
+<thead>
+<tr><th>Trabalho</th><th>Valor</th><th>Data</th></tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
 
-  <!-- Gráficos -->
-  <canvas id="grafico-valores"></canvas>
-  <canvas id="grafico-mes"></canvas>
-  <canvas id="grafico-dia"></canvas>
+<div class="charts">
+  <canvas id="grafico"></canvas>
+</div>
 
-  <script>
-    // Inicialização do Supabase
-    const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU';
+</main>
 
-    // Criamos a instância da biblioteca Supabase com outro nome
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+<script>
+const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
+const supabaseKey = 'SUA_PUBLIC_ANON_KEY_AQUI';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const logoutBtn = document.getElementById('logout');
-    const form = document.getElementById('form-trabalho');
-    const tabela = document.querySelector('#tabela-trabalhos tbody');
-    const totalTrabalhosEl = document.getElementById('total-trabalhos');
-    const totalFaturadoEl = document.getElementById('total-faturado');
+const lista = document.getElementById('lista');
+const totalTrabalhos = document.getElementById('total-trabalhos');
+const totalFaturado = document.getElementById('total-faturado');
+const form = document.getElementById('form-trabalho');
 
-    let chartValores, chartMes, chartDia;
+let chart;
 
-    // Verifica sessão
-    supabaseClient.auth.getSession().then(({ data }) => {
-      if (!data.session) window.location.href = 'login.html';
-    });
+// sessão
+supabase.auth.getSession().then(({data})=>{
+  if(!data.session) location.href='login.html';
+});
 
-    // Logout
-    logoutBtn.addEventListener('click', async () => {
-      await supabaseClient.auth.signOut();
-      window.location.href = 'login.html';
-    });
+// logout
+document.getElementById('logout').onclick = async ()=>{
+  await supabase.auth.signOut();
+  location.href='login.html';
+};
 
-    // Adicionar trabalho
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const nome = document.getElementById('nome').value;
-      const valor = parseFloat(document.getElementById('valor').value);
-      const data = document.getElementById('data').value;
+// adicionar
+form.onsubmit = async e=>{
+  e.preventDefault();
 
-      const { error } = await supabaseClient.from('trabalhos').insert([{ nome, valor, data }]);
-      if (error) {
-        alert('Erro ao adicionar trabalho');
-        console.log(error);
-        return;
-      }
+  const { data:user } = await supabase.auth.getUser();
 
-      form.reset();
-      carregarTrabalhos();
-    });
+  await supabase.from('trabalhos').insert([{
+    nome:nome.value,
+    valor:valor.value,
+    data:data.value,
+    user_id:user.user.id
+  }]);
 
-    async function carregarTrabalhos() {
-      const { data: trabalhos, error } = await supabaseClient.from('trabalhos').select('*').order('data', { ascending: true });
-      if (error) { console.log(error); return; }
+  form.reset();
+  carregar();
+};
 
-      tabela.innerHTML = '';
-      let nomes = [], valores = [], datas = [];
-      let totalFaturado = 0;
+// carregar
+async function carregar(){
+  const { data:user } = await supabase.auth.getUser();
 
-      trabalhos.forEach(t => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${t.nome}</td><td>${t.valor.toFixed(2)}</td><td>${t.data}</td>`;
-        tabela.appendChild(tr);
+  const { data } = await supabase
+    .from('trabalhos')
+    .select('*')
+    .eq('user_id', user.user.id)
+    .order('data');
 
-        nomes.push(t.nome);
-        valores.push(t.valor);
-        datas.push(t.data);
-        totalFaturado += t.valor;
-      });
+  lista.innerHTML='';
+  let total=0, labels=[], values=[];
 
-      // Atualiza indicadores
-      totalTrabalhosEl.innerText = trabalhos.length;
-      totalFaturadoEl.innerText = `€${totalFaturado.toFixed(2)}`;
+  data.forEach(t=>{
+    total+=Number(t.valor);
+    labels.push(t.data);
+    values.push(t.valor);
 
-      // Gráfico: valor por trabalho
-      if (chartValores) chartValores.destroy();
-      chartValores = new Chart(document.getElementById('grafico-valores'), {
-        type: 'bar',
-        data: { labels: nomes, datasets: [{ label: 'Valor (€)', data: valores, backgroundColor: '#007bff' }] },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-      });
+    lista.innerHTML+=`<tr>
+      <td>${t.nome}</td>
+      <td>€${Number(t.valor).toFixed(2)}</td>
+      <td>${t.data}</td>
+    </tr>`;
+  });
 
-      // Gráfico: faturamento por mês
-      const faturamentoMes = {};
-      datas.forEach((d, i) => {
-        const mes = new Date(d).toLocaleString('default', { month: 'long', year: 'numeric' });
-        faturamentoMes[mes] = (faturamentoMes[mes] || 0) + valores[i];
-      });
-      if (chartMes) chartMes.destroy();
-      chartMes = new Chart(document.getElementById('grafico-mes'), {
-        type: 'line',
-        data: { labels: Object.keys(faturamentoMes), datasets: [{ label: 'Faturamento Mensal (€)', data: Object.values(faturamentoMes), borderColor: '#00c6ff', fill: false, tension: 0.3 }] },
-        options: { responsive: true }
-      });
+  totalTrabalhos.innerText=data.length;
+  totalFaturado.innerText=`€${total.toFixed(2)}`;
 
-      // Gráfico: faturamento diário
-      const faturamentoDia = {};
-      datas.forEach((d, i) => {
-        const dia = new Date(d).toLocaleDateString();
-        faturamentoDia[dia] = (faturamentoDia[dia] || 0) + valores[i];
-      });
-      if (chartDia) chartDia.destroy();
-      chartDia = new Chart(document.getElementById('grafico-dia'), {
-        type: 'line',
-        data: { labels: Object.keys(faturamentoDia), datasets: [{ label: 'Faturamento Diário (€)', data: Object.values(faturamentoDia), borderColor: '#ff5722', fill: false, tension: 0.3 }] },
-        options: { responsive: true }
-      });
-    }
+  if(chart) chart.destroy();
+  chart=new Chart(grafico,{
+    type:'line',
+    data:{labels,datasets:[{data:values,borderColor:'#007bff',fill:false}]},
+    options:{plugins:{legend:{display:false}}}
+  });
+}
 
-    // Carrega os trabalhos ao abrir a página
-    carregarTrabalhos();
-  </script>
+carregar();
+</script>
+
 </body>
 </html>
