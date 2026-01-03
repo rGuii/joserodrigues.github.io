@@ -67,7 +67,7 @@
   <script>
     const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const supabase = Supabase.createClient(supabaseUrl, supabaseKey); // Corrigido
 
     const logoutBtn = document.getElementById('logout');
     const form = document.getElementById('form-trabalho');
