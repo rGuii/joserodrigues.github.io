@@ -100,33 +100,42 @@
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-  <script>
-    // CONFIGURAÇÃO DA SUPABASE
-    const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU'; // publishable key
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<script>
+  // SUPABASE CONFIG
+  const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
+  const supabaseKey = 'A_TUA_ANON_PUBLIC_KEY_AQUI';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const form = document.getElementById('login-form');
-    const errorMsg = document.getElementById('error-msg');
+  const form = document.getElementById('login-form');
+  const errorMsg = document.getElementById('error-msg');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    errorMsg.style.display = 'none';
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-      if (error || !data.user) {
-        errorMsg.style.display = 'block';
-        console.log(error); // ver erro no console
-        return;
-      }
+    console.log('A tentar login com:', email);
 
-      // login bem-sucedido → redireciona para dashboard
-      window.location.href = 'painel.html';
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
     });
-  </script>
+
+    if (error) {
+      console.error('Erro Supabase:', error);
+      errorMsg.textContent = error.message;
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    console.log('LOGIN OK:', data);
+    window.location.href = 'painel.html';
+  });
+</script>
+
 
 </body>
 </html>
