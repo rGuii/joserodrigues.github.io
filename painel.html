@@ -6,12 +6,17 @@
 <title>Painel · JR Solutions</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root {
   --primary:#007bff;
+  --secondary:#00c6ff;
   --bg:#f4f6f9;
   --card:#ffffff;
 }
@@ -26,7 +31,7 @@ body {
 
 /* HEADER */
 header {
-  background:linear-gradient(135deg,#007bff,#00c6ff);
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
   color:white;
   padding:20px 40px;
   display:flex;
@@ -34,10 +39,11 @@ header {
   align-items:center;
 }
 
-header h1 { margin:0; font-size:1.5em; }
+header h1 { margin:0; font-size:1.4em; }
+
 header button {
   background:white;
-  color:#007bff;
+  color:var(--primary);
   border:none;
   padding:10px 25px;
   border-radius:30px;
@@ -45,7 +51,7 @@ header button {
   cursor:pointer;
 }
 
-/* LAYOUT */
+/* MAIN */
 main {
   max-width:1200px;
   margin:40px auto;
@@ -63,23 +69,31 @@ main {
 .card {
   background:var(--card);
   padding:25px;
-  border-radius:16px;
+  border-radius:18px;
   box-shadow:0 10px 25px rgba(0,0,0,0.08);
   text-align:center;
 }
 
-.card h2 { margin:0; font-size:2em; color:var(--primary); }
-.card p { margin:5px 0 0; color:#666; }
+.card h2 {
+  margin:0;
+  font-size:2em;
+  color:var(--primary);
+}
+
+.card p {
+  margin-top:5px;
+  color:#666;
+}
 
 /* FORM */
 form {
   background:white;
   padding:25px;
-  border-radius:16px;
+  border-radius:18px;
   box-shadow:0 10px 25px rgba(0,0,0,0.08);
   margin-bottom:40px;
-  display:flex;
-  flex-wrap:wrap;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
   gap:15px;
 }
 
@@ -89,8 +103,6 @@ form input, form button {
   border:1px solid #ddd;
   font-family:inherit;
 }
-
-form input { flex:1; min-width:180px; }
 
 form button {
   background:var(--primary);
@@ -104,7 +116,7 @@ form button {
 table {
   width:100%;
   background:white;
-  border-radius:16px;
+  border-radius:18px;
   overflow:hidden;
   box-shadow:0 10px 25px rgba(0,0,0,0.08);
   border-collapse:collapse;
@@ -115,20 +127,17 @@ th,td {
   border-bottom:1px solid #eee;
 }
 
-th { background:#f0f4ff; }
-
-/* CHARTS */
-.charts {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:30px;
-  margin-top:40px;
+th {
+  background:#f0f4ff;
+  text-align:left;
 }
 
-canvas {
+/* CHART */
+.chart-box {
+  margin-top:40px;
   background:white;
-  padding:20px;
-  border-radius:16px;
+  padding:25px;
+  border-radius:18px;
   box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 </style>
@@ -143,110 +152,164 @@ canvas {
 
 <main>
 
-<div class="cards">
-  <div class="card">
-    <h2 id="total-trabalhos">0</h2>
-    <p>Trabalhos</p>
+  <!-- CARDS -->
+  <div class="cards">
+    <div class="card">
+      <h2 id="total-trabalhos">0</h2>
+      <p>Trabalhos realizados</p>
+    </div>
+    <div class="card">
+      <h2 id="total-faturado">€0.00</h2>
+      <p>Faturação total</p>
+    </div>
   </div>
-  <div class="card">
-    <h2 id="total-faturado">€0.00</h2>
-    <p>Faturação</p>
+
+  <!-- FORM -->
+  <form id="form-trabalho">
+    <input type="text" id="nome" placeholder="Descrição do trabalho" required>
+    <input type="number" id="valor" placeholder="Valor (€)" step="0.01" required>
+    <input type="date" id="data" required>
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <!-- TABLE -->
+  <table>
+    <thead>
+      <tr>
+        <th>Trabalho</th>
+        <th>Valor</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+  </table>
+
+  <!-- CHART -->
+  <div class="chart-box">
+    <canvas id="grafico"></canvas>
   </div>
-</div>
-
-<form id="form-trabalho">
-  <input type="text" id="nome" placeholder="Descrição do trabalho" required>
-  <input type="number" id="valor" placeholder="Valor €" step="0.01" required>
-  <input type="date" id="data" required>
-  <button type="submit">Adicionar</button>
-</form>
-
-<table>
-<thead>
-<tr><th>Trabalho</th><th>Valor</th><th>Data</th></tr>
-</thead>
-<tbody id="lista"></tbody>
-</table>
-
-<div class="charts">
-  <canvas id="grafico"></canvas>
-</div>
 
 </main>
 
 <script>
-const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
-const supabaseKey = 'SUA_PUBLIC_ANON_KEY_AQUI';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+/* =========================
+   SUPABASE CONFIG
+========================= */
+const SUPABASE_URL = 'https://enhhqjraoztkelmkddjr.supabase.co';
+const SUPABASE_ANON_KEY =
+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU';
 
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+/* =========================
+   ELEMENTOS
+========================= */
 const lista = document.getElementById('lista');
 const totalTrabalhos = document.getElementById('total-trabalhos');
 const totalFaturado = document.getElementById('total-faturado');
 const form = document.getElementById('form-trabalho');
+const logoutBtn = document.getElementById('logout');
 
 let chart;
 
-// sessão
-supabase.auth.getSession().then(({data})=>{
-  if(!data.session) location.href='login.html';
+/* =========================
+   AUTENTICAÇÃO
+========================= */
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (!data.session) {
+    window.location.href = 'login.html';
+  }
 });
 
-// logout
-document.getElementById('logout').onclick = async ()=>{
-  await supabase.auth.signOut();
-  location.href='login.html';
+logoutBtn.onclick = async () => {
+  await supabaseClient.auth.signOut();
+  window.location.href = 'login.html';
 };
 
-// adicionar
-form.onsubmit = async e=>{
+/* =========================
+   INSERIR TRABALHO
+========================= */
+form.addEventListener('submit', async e => {
   e.preventDefault();
 
-  const { data:user } = await supabase.auth.getUser();
+  const { data: userData } = await supabaseClient.auth.getUser();
 
-  await supabase.from('trabalhos').insert([{
-    nome:nome.value,
-    valor:valor.value,
-    data:data.value,
-    user_id:user.user.id
-  }]);
+  const { error } = await supabaseClient
+    .from('trabalhos')
+    .insert([{
+      nome: nome.value,
+      valor: Number(valor.value),
+      data: data.value,
+      user_id: userData.user.id
+    }]);
+
+  if (error) {
+    alert('Erro ao gravar trabalho');
+    console.log(error);
+    return;
+  }
 
   form.reset();
   carregar();
-};
+});
 
-// carregar
-async function carregar(){
-  const { data:user } = await supabase.auth.getUser();
+/* =========================
+   CARREGAR DADOS
+========================= */
+async function carregar() {
+  const { data: userData } = await supabaseClient.auth.getUser();
 
-  const { data } = await supabase
+  const { data, error } = await supabaseClient
     .from('trabalhos')
     .select('*')
-    .eq('user_id', user.user.id)
+    .eq('user_id', userData.user.id)
     .order('data');
 
-  lista.innerHTML='';
-  let total=0, labels=[], values=[];
+  if (error) {
+    console.log(error);
+    return;
+  }
 
-  data.forEach(t=>{
-    total+=Number(t.valor);
+  lista.innerHTML = '';
+  let total = 0;
+  let labels = [];
+  let values = [];
+
+  data.forEach(t => {
+    total += Number(t.valor);
     labels.push(t.data);
     values.push(t.valor);
 
-    lista.innerHTML+=`<tr>
-      <td>${t.nome}</td>
-      <td>€${Number(t.valor).toFixed(2)}</td>
-      <td>${t.data}</td>
-    </tr>`;
+    lista.innerHTML += `
+      <tr>
+        <td>${t.nome}</td>
+        <td>€${Number(t.valor).toFixed(2)}</td>
+        <td>${t.data}</td>
+      </tr>
+    `;
   });
 
-  totalTrabalhos.innerText=data.length;
-  totalFaturado.innerText=`€${total.toFixed(2)}`;
+  totalTrabalhos.innerText = data.length;
+  totalFaturado.innerText = `€${total.toFixed(2)}`;
 
-  if(chart) chart.destroy();
-  chart=new Chart(grafico,{
-    type:'line',
-    data:{labels,datasets:[{data:values,borderColor:'#007bff',fill:false}]},
-    options:{plugins:{legend:{display:false}}}
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById('grafico'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: '#007bff',
+        tension: 0.3,
+        fill: false
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } }
+    }
   });
 }
 
