@@ -146,6 +146,71 @@ th {
   border-radius:18px;
   box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
+
+/* MEDIA QUERIES PARA RESPONSIVIDADE */
+@media (max-width: 768px) {
+  /* Header: Reduzir padding para caber melhor */
+  header {
+    padding:15px 20px;
+  }
+  
+  header h1 {
+    font-size:1.2em; /* Título menor */
+  }
+  
+  header button {
+    padding:8px 15px; /* Botão menor */
+    font-size:0.9em;
+  }
+  
+  /* Main: Menos margem e padding */
+  main {
+    margin:20px auto;
+    padding:0 15px;
+  }
+  
+  /* Cards: Garantir que empilhem e ajustem tamanho */
+  .cards {
+    grid-template-columns:1fr; /* Uma coluna em telas pequenas */
+    gap:15px;
+    margin-bottom:20px;
+  }
+  
+  .card {
+    padding:20px; /* Menos padding */
+  }
+  
+  .card h2 {
+    font-size:1.5em; /* Valor menor */
+  }
+  
+  /* Form: Empilhar campos verticalmente */
+  form {
+    grid-template-columns:1fr; /* Uma coluna */
+    gap:10px;
+    padding:20px;
+  }
+  
+  form input, form button {
+    padding:12px; /* Menos padding */
+  }
+  
+  /* Table: Adicionar scroll horizontal para evitar overflow */
+  table {
+    overflow-x:auto; /* Scroll horizontal */
+    display:block; /* Permite scroll */
+  }
+  
+  /* Charts: Menos padding */
+  .chart-box {
+    padding:20px;
+  }
+  
+  .charts {
+    margin-top:20px;
+    gap:20px;
+  }
+}
 </style>
 </head>
 
