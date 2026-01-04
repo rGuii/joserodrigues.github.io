@@ -7,7 +7,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<!-- SUPABASE UMD (CORRETO) -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 
 <!-- CHART.JS -->
@@ -19,7 +19,6 @@
   --secondary:#00c6ff;
   --bg:#f4f6f9;
   --card:#ffffff;
-  --danger:#ff4d4d;
 }
 
 * { box-sizing:border-box; }
@@ -28,83 +27,83 @@ body {
   margin:0;
   font-family:'Poppins',sans-serif;
   background:var(--bg);
-  color:#333;
 }
 
 /* HEADER */
 header {
   background:linear-gradient(135deg,var(--primary),var(--secondary));
   color:white;
-  padding:16px 20px;
+  padding:20px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
 }
 
 header h1 {
   margin:0;
-  font-size:1.2em;
+  font-size:1.3em;
 }
 
 header button {
   background:white;
   color:var(--primary);
   border:none;
-  padding:8px 18px;
-  border-radius:20px;
+  padding:10px 25px;
+  border-radius:30px;
   font-weight:600;
   cursor:pointer;
 }
 
 /* MAIN */
 main {
-  max-width:1100px;
-  margin:25px auto;
+  max-width:1200px;
+  margin:30px auto;
   padding:0 15px;
 }
 
 /* CARDS */
 .cards {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:15px;
-  margin-bottom:25px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  margin-bottom:35px;
 }
 
 .card {
   background:var(--card);
-  padding:18px;
-  border-radius:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  padding:22px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
   text-align:center;
 }
 
 .card h2 {
   margin:0;
-  font-size:1.6em;
+  font-size:1.8em;
   color:var(--primary);
 }
 
 .card p {
-  margin-top:4px;
-  font-size:0.9em;
+  margin-top:5px;
   color:#666;
 }
 
 /* FORM */
 form {
   background:white;
-  padding:18px;
-  border-radius:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  margin-bottom:35px;
   display:grid;
   grid-template-columns:1fr 1fr 1fr auto;
-  gap:10px;
-  margin-bottom:25px;
+  gap:15px;
 }
 
 form input, form button {
-  padding:12px;
+  padding:14px;
   border-radius:10px;
   border:1px solid #ddd;
   font-family:inherit;
@@ -120,59 +119,59 @@ form button {
 
 /* TABLE */
 .table-wrapper {
-  background:white;
-  border-radius:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
   overflow-x:auto;
 }
 
 table {
   width:100%;
+  min-width:520px;
+  background:white;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
   border-collapse:collapse;
-  min-width:600px;
 }
 
 th,td {
-  padding:12px;
+  padding:14px;
   border-bottom:1px solid #eee;
-  text-align:left;
 }
 
 th {
   background:#f0f4ff;
-  font-size:0.9em;
-}
-
-.delete-btn {
-  background:var(--danger);
-  color:white;
-  border:none;
-  padding:6px 14px;
-  border-radius:20px;
-  cursor:pointer;
-  font-size:0.8em;
+  text-align:left;
 }
 
 /* CHARTS */
 .charts {
-  margin-top:30px;
+  margin-top:35px;
   display:grid;
-  gap:25px;
+  grid-template-columns:1fr;
+  gap:30px;
 }
 
 .chart-box {
   background:white;
-  padding:18px;
-  border-radius:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.chart-box canvas {
+  width:100% !important;
+  height:260px !important;
 }
 
 /* MOBILE */
-@media (max-width:768px) {
+@media (max-width: 768px) {
 
   header {
     flex-direction:column;
-    gap:10px;
+    align-items:flex-start;
+  }
+
+  header button {
+    align-self:stretch;
     text-align:center;
   }
 
@@ -181,7 +180,11 @@ th {
   }
 
   table {
-    min-width:500px;
+    min-width:480px;
+  }
+
+  .chart-box canvas {
+    height:220px !important;
   }
 }
 </style>
@@ -196,71 +199,71 @@ th {
 
 <main>
 
-  <!-- CARDS -->
-  <div class="cards">
-    <div class="card">
-      <h2 id="total-geral">€0.00</h2>
-      <p>Faturamento Total</p>
-    </div>
-    <div class="card">
-      <h2 id="total-mes">€0.00</h2>
-      <p>Faturamento do Mês</p>
-    </div>
+<div class="cards">
+  <div class="card">
+    <h2 id="total-geral">€0.00</h2>
+    <p>Faturamento Total</p>
+  </div>
+  <div class="card">
+    <h2 id="total-mes">€0.00</h2>
+    <p>Faturamento do Mês</p>
+  </div>
+</div>
+
+<form id="form-trabalho">
+  <input type="text" id="nome" placeholder="Descrição do trabalho" required>
+  <input type="number" id="valor" placeholder="Valor (€)" step="0.01" required>
+  <input type="date" id="data" required>
+  <button type="submit">Adicionar</button>
+</form>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr>
+      <th>Trabalho</th>
+      <th>Valor</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody id="lista"></tbody>
+</table>
+</div>
+
+<div class="charts">
+  <div class="chart-box">
+    <h3>Faturamento por Mês</h3>
+    <canvas id="grafico-meses"></canvas>
   </div>
 
-  <!-- FORM -->
-  <form id="form-trabalho">
-    <input type="text" id="nome" placeholder="Descrição" required>
-    <input type="number" id="valor" placeholder="Valor €" step="0.01" required>
-    <input type="date" id="data" required>
-    <button type="submit">Adicionar</button>
-  </form>
-
-  <!-- TABLE -->
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Trabalho</th>
-          <th>Valor</th>
-          <th>Data</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="lista"></tbody>
-    </table>
+  <div class="chart-box">
+    <h3>Faturamento Diário (Mês Atual)</h3>
+    <canvas id="grafico-dias"></canvas>
   </div>
-
-  <!-- CHARTS -->
-  <div class="charts">
-    <div class="chart-box">
-      <h3>Faturamento Mensal</h3>
-      <canvas id="grafico-meses"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <h3>Faturamento Diário (Mês Atual)</h3>
-      <canvas id="grafico-dias"></canvas>
-    </div>
-  </div>
+</div>
 
 </main>
 
 <script>
-/* SUPABASE */
-const supabaseUrl = 'https://enhhqjraoztkelmkddjr.supabase.co';
-const supabaseKey =
-'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU';
+const SUPABASE_URL = 'https://enhhqjraoztkelmkddjr.supabase.co';
+const SUPABASE_ANON_KEY = 'COLOCA_A_TUA_ANON_KEY_AQUI';
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-/* LOGOUT */
+// auth
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (!data.session) window.location.href = 'login.html';
+});
+
+// logout
 document.getElementById('logout').onclick = async () => {
-  await supabase.auth.signOut();
-  location.href = 'index.html';
+  await supabaseClient.auth.signOut();
+  window.location.href = 'index.html';
 };
 
-/* ELEMENTOS */
 const lista = document.getElementById('lista');
 const totalGeralEl = document.getElementById('total-geral');
 const totalMesEl = document.getElementById('total-mes');
@@ -268,80 +271,74 @@ const form = document.getElementById('form-trabalho');
 
 let chartMeses, chartDias;
 
-/* INSERIR */
-form.onsubmit = async e => {
+// inserir
+form.addEventListener('submit', async e => {
   e.preventDefault();
 
-  await supabase.from('trabalhos').insert([{
-    nome:nome.value,
-    valor:Number(valor.value),
-    data:data.value
+  await supabaseClient.from('trabalhos').insert([{
+    nome: nome.value,
+    valor: Number(valor.value),
+    data: data.value
   }]);
 
   form.reset();
   carregar();
-};
+});
 
-/* APAGAR */
-async function apagar(id) {
-  if(!confirm('Apagar este trabalho?')) return;
-  await supabase.from('trabalhos').delete().eq('id', id);
-  carregar();
-}
-
-/* CARREGAR */
+// carregar
 async function carregar() {
-  const { data } = await supabase.from('trabalhos').select('*').order('data');
+  const { data } = await supabaseClient
+    .from('trabalhos')
+    .select('*')
+    .order('data');
 
   lista.innerHTML = '';
+
+  const meses = Array(12).fill(0);
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mesAtual = hoje.getMonth();
+  const diasNoMes = new Date(ano, mesAtual + 1, 0).getDate();
+  const dias = Array(diasNoMes).fill(0);
 
   let totalGeral = 0;
   let totalMes = 0;
 
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mesAtual = hoje.getMonth();
-
-  const meses = Array(12).fill(0);
-  const diasNoMes = new Date(ano, mesAtual + 1, 0).getDate();
-  const dias = Array(diasNoMes).fill(0);
-
   data.forEach(t => {
     const d = new Date(t.data);
-    const v = Number(t.valor);
+    const valor = Number(t.valor);
 
-    totalGeral += v;
+    totalGeral += valor;
 
-    if (d.getFullYear() === ano) meses[d.getMonth()] += v;
+    if (d.getFullYear() === ano) meses[d.getMonth()] += valor;
     if (d.getMonth() === mesAtual && d.getFullYear() === ano) {
-      totalMes += v;
-      dias[d.getDate() - 1] += v;
+      totalMes += valor;
+      dias[d.getDate() - 1] += valor;
     }
 
     lista.innerHTML += `
       <tr>
         <td>${t.nome}</td>
-        <td>€${v.toFixed(2)}</td>
+        <td>€${valor.toFixed(2)}</td>
         <td>${t.data}</td>
-        <td><button class="delete-btn" onclick="apagar(${t.id})">Apagar</button></td>
       </tr>`;
   });
 
   totalGeralEl.innerText = `€${totalGeral.toFixed(2)}`;
   totalMesEl.innerText = `€${totalMes.toFixed(2)}`;
 
-  if(chartMeses) chartMeses.destroy();
-  chartMeses = new Chart(grafico-meses,{
+  if (chartMeses) chartMeses.destroy();
+  chartMeses = new Chart(document.getElementById('grafico-meses'), {
     type:'bar',
-    data:{labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],datasets:[{data:meses,backgroundColor:'#007bff'}]},
-    options:{plugins:{legend:{display:false}}}
+    data:{ labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], datasets:[{ data:meses, backgroundColor:'#007bff' }] },
+    options:{ plugins:{ legend:{ display:false } } }
   });
 
-  if(chartDias) chartDias.destroy();
-  chartDias = new Chart(grafico-dias,{
+  if (chartDias) chartDias.destroy();
+  chartDias = new Chart(document.getElementById('grafico-dias'), {
     type:'line',
-    data:{labels:Array.from({length:diasNoMes},(_,i)=>i+1),datasets:[{data:dias,borderColor:'#00c6ff',tension:0.3}]},
-    options:{plugins:{legend:{display:false}}}
+    data:{ labels:Array.from({length:diasNoMes},(_,i)=>i+1), datasets:[{ data:dias, borderColor:'#00c6ff', tension:0.3 }] },
+    options:{ plugins:{ legend:{ display:false } } }
   });
 }
 
