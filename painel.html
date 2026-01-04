@@ -7,11 +7,10 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<!-- Supabase -->
+<!-- SUPABASE (UMD CORRETO) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 
-
-<!-- Chart.js -->
+<!-- CHART.JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -62,7 +61,7 @@ main {
 /* CARDS */
 .cards {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:25px;
   margin-bottom:40px;
 }
@@ -133,9 +132,15 @@ th {
   text-align:left;
 }
 
-/* CHART */
-.chart-box {
+/* CHARTS */
+.charts {
   margin-top:40px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:40px;
+}
+
+.chart-box {
   background:white;
   padding:25px;
   border-radius:18px;
@@ -147,7 +152,7 @@ th {
 <body>
 
 <header>
-  <h1>Painel de Trabalhos</h1>
+  <h1>Painel Financeiro</h1>
   <button id="logout">Sair</button>
 </header>
 
@@ -156,12 +161,12 @@ th {
   <!-- CARDS -->
   <div class="cards">
     <div class="card">
-      <h2 id="total-trabalhos">0</h2>
-      <p>Trabalhos realizados</p>
+      <h2 id="total-geral">€0.00</h2>
+      <p>Faturamento Total</p>
     </div>
     <div class="card">
-      <h2 id="total-faturado">€0.00</h2>
-      <p>Faturação total</p>
+      <h2 id="total-mes">€0.00</h2>
+      <p>Faturamento do Mês</p>
     </div>
   </div>
 
@@ -185,17 +190,23 @@ th {
     <tbody id="lista"></tbody>
   </table>
 
-  <!-- CHART -->
-  <div class="chart-box">
-    <canvas id="grafico"></canvas>
+  <!-- CHARTS -->
+  <div class="charts">
+    <div class="chart-box">
+      <h3>Faturamento por Mês</h3>
+      <canvas id="grafico-meses"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h3>Faturamento Diário (Mês Atual)</h3>
+      <canvas id="grafico-dias"></canvas>
+    </div>
   </div>
 
 </main>
 
 <script>
-/* =========================
-   SUPABASE CONFIG
-========================= */
+/* ================= SUPABASE ================= */
 const SUPABASE_URL = 'https://enhhqjraoztkelmkddjr.supabase.co';
 const SUPABASE_ANON_KEY =
 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuaGhxanJhb3p0a2VsbWtkZGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODYyODksImV4cCI6MjA4Mjg2MjI4OX0.tkx_7cDXiAH3A1JIjQtAHKzghUeRD_XbjbDBigEdukU';
@@ -205,112 +216,110 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_ANON_KEY
 );
 
-/* =========================
-   ELEMENTOS
-========================= */
-const lista = document.getElementById('lista');
-const totalTrabalhos = document.getElementById('total-trabalhos');
-const totalFaturado = document.getElementById('total-faturado');
-const form = document.getElementById('form-trabalho');
-const logoutBtn = document.getElementById('logout');
-
-let chart;
-
-/* =========================
-   AUTENTICAÇÃO
-========================= */
+/* ================= AUTH ================= */
 supabaseClient.auth.getSession().then(({ data }) => {
-  if (!data.session) {
-    window.location.href = 'login.html';
-  }
+  if (!data.session) window.location.href = 'login.html';
 });
 
-logoutBtn.onclick = async () => {
+document.getElementById('logout').onclick = async () => {
   await supabaseClient.auth.signOut();
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 };
 
-/* =========================
-   INSERIR TRABALHO
-========================= */
+/* ================= ELEMENTOS ================= */
+const lista = document.getElementById('lista');
+const totalGeralEl = document.getElementById('total-geral');
+const totalMesEl = document.getElementById('total-mes');
+const form = document.getElementById('form-trabalho');
+
+let chartMeses, chartDias;
+
+/* ================= INSERIR ================= */
 form.addEventListener('submit', async e => {
   e.preventDefault();
 
-  const { data: userData } = await supabaseClient.auth.getUser();
+  const { data:userData } = await supabaseClient.auth.getUser();
 
-  const { error } = await supabaseClient
-    .from('trabalhos')
-    .insert([{
-      nome: nome.value,
-      valor: Number(valor.value),
-      data: data.value,
-      user_id: userData.user.id
-    }]);
-
-  if (error) {
-    alert('Erro ao gravar trabalho');
-    console.log(error);
-    return;
-  }
+  await supabaseClient.from('trabalhos').insert([{
+    nome: nome.value,
+    valor: Number(valor.value),
+    data: data.value,
+    user_id: userData.user.id
+  }]);
 
   form.reset();
   carregar();
 });
 
-/* =========================
-   CARREGAR DADOS
-========================= */
+/* ================= CARREGAR ================= */
 async function carregar() {
-  const { data: userData } = await supabaseClient.auth.getUser();
+  const { data:userData } = await supabaseClient.auth.getUser();
 
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from('trabalhos')
     .select('*')
     .eq('user_id', userData.user.id)
     .order('data');
 
-  if (error) {
-    console.log(error);
-    return;
-  }
-
   lista.innerHTML = '';
-  let total = 0;
-  let labels = [];
-  let values = [];
+
+  const meses = Array(12).fill(0);
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mesAtual = hoje.getMonth();
+  const diasNoMes = new Date(ano, mesAtual + 1, 0).getDate();
+  const dias = Array(diasNoMes).fill(0);
+
+  let totalGeral = 0;
+  let totalMes = 0;
 
   data.forEach(t => {
-    total += Number(t.valor);
-    labels.push(t.data);
-    values.push(t.valor);
+    const d = new Date(t.data);
+    const valor = Number(t.valor);
+
+    totalGeral += valor;
+
+    if (d.getFullYear() === ano) {
+      meses[d.getMonth()] += valor;
+    }
+
+    if (d.getMonth() === mesAtual && d.getFullYear() === ano) {
+      totalMes += valor;
+      dias[d.getDate() - 1] += valor;
+    }
 
     lista.innerHTML += `
       <tr>
         <td>${t.nome}</td>
-        <td>€${Number(t.valor).toFixed(2)}</td>
+        <td>€${valor.toFixed(2)}</td>
         <td>${t.data}</td>
       </tr>
     `;
   });
 
-  totalTrabalhos.innerText = data.length;
-  totalFaturado.innerText = `€${total.toFixed(2)}`;
+  totalGeralEl.innerText = `€${totalGeral.toFixed(2)}`;
+  totalMesEl.innerText = `€${totalMes.toFixed(2)}`;
 
-  if (chart) chart.destroy();
-  chart = new Chart(document.getElementById('grafico'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        borderColor: '#007bff',
-        tension: 0.3,
-        fill: false
-      }]
+  // gráfico meses
+  if (chartMeses) chartMeses.destroy();
+  chartMeses = new Chart(document.getElementById('grafico-meses'), {
+    type:'bar',
+    data:{
+      labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+      datasets:[{ data:meses, backgroundColor:'#007bff' }]
     },
-    options: {
-      plugins: { legend: { display: false } }
-    }
+    options:{ plugins:{ legend:{ display:false } } }
+  });
+
+  // gráfico dias
+  if (chartDias) chartDias.destroy();
+  chartDias = new Chart(document.getElementById('grafico-dias'), {
+    type:'line',
+    data:{
+      labels:Array.from({length:diasNoMes},(_,i)=>i+1),
+      datasets:[{ data:dias, borderColor:'#00c6ff', tension:0.3 }]
+    },
+    options:{ plugins:{ legend:{ display:false } } }
   });
 }
 
