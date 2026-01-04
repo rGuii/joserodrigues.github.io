@@ -288,17 +288,17 @@ async function carregar() {
       dias[d.getDate() - 1] += valor;
     }
 
-    lista.innerHTML += 
+    lista.innerHTML += `
       <tr>
         <td>${t.nome}</td>
         <td>€${valor.toFixed(2)}</td>
         <td>${t.data}</td>
       </tr>
-    ;
+    `;
   });
 
-  totalGeralEl.innerText = €${totalGeral.toFixed(2)};
-  totalMesEl.innerText = €${totalMes.toFixed(2)};
+  totalGeralEl.innerText = `€${totalGeral.toFixed(2)}`;
+  totalMesEl.innerText = `€${totalMes.toFixed(2)}`;
 
   // gráfico meses
   if (chartMeses) chartMeses.destroy();
